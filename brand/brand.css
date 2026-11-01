@@ -1,0 +1,51 @@
+@font-face {
+  font-family: "HK Grotesk Wide";
+  src: url("./fonts/HKGroteskWide-ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HK Grotesk";
+  src: url("./fonts/HKGrotesk-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HK Grotesk";
+  src: url("./fonts/HKGrotesk-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HK Grotesk";
+  src: url("./fonts/HKGrotesk-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HK Grotesk";
+  src: url("./fonts/HKGrotesk-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --butter: #fff888;
+  --sauce: #fb3a44;
+  --char: #4a1215;
+  --crust: #7e4b3a;
+  --dough: #fffcc7;
+  --oven: #2a0d0f;
+  --ember: #3a1417;
+  --wide: "HK Grotesk Wide", "Helvetica Neue", Arial, sans-serif;
+  --text: "HK Grotesk", "Helvetica Neue", Arial, sans-serif;
+}

@@ -1,0 +1,23 @@
+---
+import Logo from './Logo.astro'
+import Mazzen from './Mazzen.astro'
+
+const year = new Date().getFullYear()
+---
+
+<footer>
+  <a href="/" aria-label="Crustulator home">
+    <Logo />
+  </a>
+  <nav aria-label="Footer">
+    <ul>
+      <li><a href="https://crustulator.com">Web app</a></li>
+      <li><a href="/support">Support</a></li>
+      <li><a href="/privacy">Privacy</a></li>
+    </ul>
+  </nav>
+  <p>
+    <small>Made with flour, water, salt and yeast. ©&nbsp;{year}&nbsp;Crustulator</small>
+    <a href="https://mazz.digital" target="_blank" rel="noreferrer" aria-label="mazz.digital"><Mazzen /></a>
+  </p>
+</footer>

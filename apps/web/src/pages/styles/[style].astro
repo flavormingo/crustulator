@@ -1,0 +1,40 @@
+---
+import { bakeTime, formatOvenRange, getStyle, styles, type StyleId } from '@crustulator/core'
+import Calculator from '../../calculator/Calculator'
+import Base from '../../layouts/Base.astro'
+
+export function getStaticPaths() {
+  return styles.map((style) => ({ params: { style: style.id } }))
+}
+
+const style = getStyle(Astro.params.style as StyleId)
+---
+
+<Base
+  title={`${style.name} pizza dough calculator | Crustulator`}
+  description={`${style.tagline} Get exact flour, water, salt and yeast amounts for ${style.name.toLowerCase()} pizza dough on your schedule.`}
+>
+  <Calculator client:load style={style.id} />
+  <section aria-labelledby="about-style">
+    <h2 id="about-style">{`About ${style.name} pizza`}</h2>
+    <p>{style.description}</p>
+    <dl>
+      <div>
+        <dt>From</dt>
+        <dd>{style.origin}</dd>
+      </div>
+      <div>
+        <dt>Flour</dt>
+        <dd>{style.flour}</dd>
+      </div>
+      <div>
+        <dt>Oven</dt>
+        <dd>{`${formatOvenRange(style.oven.temp, 'c')} or ${formatOvenRange(style.oven.temp, 'f')} for ${bakeTime(style.oven)}`}</dd>
+      </div>
+    </dl>
+    <h3>Tips</h3>
+    <ul>
+      {style.tips.map((tip) => <li>{tip}</li>)}
+    </ul>
+  </section>
+</Base>

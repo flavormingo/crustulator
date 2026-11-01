@@ -1,0 +1,11 @@
+---
+import Recipes from '../calculator/Recipes'
+import Base from '../layouts/Base.astro'
+---
+
+<Base title="Your recipes | Crustulator" description="The pizza doughs you saved in this browser.">
+  <Recipes client:only="react" />
+  <noscript>
+    <p>Saved recipes live in your browser, so this page needs JavaScript.</p>
+  </noscript>
+</Base>

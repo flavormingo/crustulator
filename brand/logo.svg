@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="345px" height="345px" viewBox="0 0 345 345" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group</title>
+    <g id="crustulator" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(13, 13)" stroke="#FB3A44" stroke-width="24">
+            <path d="M60.3904035,267.950392 L0.263427129,11.8188549 C-1.42021256,4.64661467 5.24597179,-1.67761291 12.2984395,0.401427272 L268.069651,75.8025014" id="Path"></path>
+            <path d="M319.158746,98.6147793 C322.903363,83.6009836 313.795829,68.387194 298.817363,64.6337451 C283.837299,60.8802962 268.659141,70.0086019 264.914524,85.0223976 C258.653794,110.119794 234.545428,149.84509 197.383623,187.092958 C160.624396,223.937317 115.140085,254.247045 70.0829537,264.669467 C55.0381897,268.148945 45.6565193,283.194125 49.1284371,298.272931 C52.6001951,313.353338 67.6109317,322.755774 82.6556956,319.276296 C141.439626,305.680232 195.800468,267.935981 236.920959,226.72186 C277.637275,185.909648 309.442553,137.56684 319.158746,98.6147793 Z" id="Path" stroke-linecap="round"></path>
+            <line x1="32.4335792" y1="135.848234" x2="108.316381" y2="135.867404" id="Line" stroke-linecap="round" stroke-linejoin="round" transform="translate(70.375, 135.8578) rotate(-0.0145) translate(-70.375, -135.8578)"></line>
+            <line x1="24.4459177" y1="79.8053648" x2="108.316383" y2="79.81495" id="Line" stroke-linecap="round" stroke-linejoin="round" transform="translate(66.3812, 79.8102) rotate(-0.0065) translate(-66.3812, -79.8102)"></line>
+            <line x1="48.4089009" y1="191.890899" x2="108.316376" y2="191.920453" id="Line" stroke-linecap="round" stroke-linejoin="round" transform="translate(78.3627, 191.9057) rotate(-0.0283) translate(-78.3627, -191.9057)"></line>
+        </g>
+    </g>
+</svg>

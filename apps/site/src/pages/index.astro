@@ -1,0 +1,167 @@
+---
+import {
+  applySchedule,
+  calculate,
+  defaultRecipe,
+  formatDuration,
+  formatWeight,
+  planHours,
+  schedulePresets,
+  styles,
+} from '@crustulator/core'
+import { Bookmark, Droplet, Fridge, Lock, ShareIos, Weight } from 'iconoir-react'
+import doughDark from '../assets/screens/dough-dark.png'
+import doughLight from '../assets/screens/dough-light.png'
+import planDark from '../assets/screens/plan-dark.png'
+import planLight from '../assets/screens/plan-light.png'
+import rulersLight from '../assets/screens/rulers-light.png'
+import Phone from '../components/Phone.astro'
+import Tape from '../components/Tape.astro'
+import Base from '../layouts/Base.astro'
+
+const menu = styles.map((style) => ({
+  name: style.name,
+  tagline: style.tagline,
+  hydration: `${style.recipe.hydration}% hydration`,
+  time: formatDuration(planHours(style.recipe)),
+}))
+
+const neapolitan = defaultRecipe('neapolitan')
+const yeast = schedulePresets.map((preset) => {
+  const recipe = applySchedule(neapolitan, preset.id)
+  return {
+    name: preset.name,
+    time: formatDuration(planHours(recipe)),
+    grams: formatWeight(calculate(recipe).yeast, 'g'),
+  }
+})
+
+const extras = [
+  { icon: Bookmark, text: 'Save the doughs you love and pull them back up in one tap.' },
+  { icon: ShareIos, text: 'Share any recipe as a link that opens on the web or right in the app.' },
+  { icon: Fridge, text: 'Give every step its own time and temperature, on the counter or in the fridge.' },
+  { icon: Weight, text: 'Grams or ounces, Celsius or Fahrenheit, centimeters or inches.' },
+  { icon: Droplet, text: 'Teaspoon estimates for salt and yeast when your scale runs out of decimals.' },
+  { icon: Lock, text: 'No account, no ads and no tracking.' },
+]
+---
+
+<Base
+  title="Crustulator: the pizza dough calculator for iPhone"
+  description="Pick a pizza style and a schedule. Crustulator works out the flour, water, salt and yeast to the gram and tells you when to mix, ball and bake."
+>
+  <section aria-labelledby="hero-title">
+    <header>
+      <h1 id="hero-title">Pizza dough, measured to the gram.</h1>
+      <p>
+        Crustulator is a pizza dough calculator for iPhone. Pick a style and a schedule and it works out exactly how much flour, water, salt and yeast to weigh. Then it tells you when to mix, ball and bake.
+      </p>
+      <p>
+        <a href="https://crustulator.com">Open the web app</a>
+        <small>The iPhone app is coming soon to the App Store.</small>
+      </p>
+    </header>
+    <Phone light={doughLight} dark={doughDark} alt="The Crustulator dough screen showing flour, water, salt and yeast for four Neapolitan pizzas" eager />
+    <Tape value={62} from={44} label="hydration" />
+  </section>
+
+  <section aria-labelledby="rulers-title">
+    <header>
+      <h2 id="rulers-title">Drag a ruler, feel the click</h2>
+      <p>
+        Every number in Crustulator is a ruler you slide with your thumb. Hydration, salt, ball weight, time and temperature snap into place with a tiny haptic tick, so dialing in a dough feels more like tuning a radio than filling in a form.
+      </p>
+    </header>
+    <Phone light={rulersLight} alt="Ruler sliders for hydration, salt, olive oil and sugar" />
+  </section>
+
+  <section aria-labelledby="styles-title">
+    <header>
+      <h2 id="styles-title">Twelve styles to start from</h2>
+      <p>Each style loads sensible numbers for hydration, salt, oil, size and fermentation. Change anything you like after that.</p>
+    </header>
+    <ul>
+      {menu.map((style) => (
+        <li>
+          <h3>{style.name}</h3>
+          <p>{style.tagline}</p>
+          <p>
+            <span>{style.hydration}</span>{' '}
+            <span>{style.time}</span>
+          </p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section aria-labelledby="yeast-title">
+    <header>
+      <h2 id="yeast-title">Yeast math, done for you</h2>
+      <p>
+        Tell Crustulator how long the dough will rest and whether it sits on the counter or in the fridge. It works out the yeast for that exact schedule. The fridge slows yeast right down, so cold schedules often need more of it. Poolish, biga and sourdough starters are covered too.
+      </p>
+    </header>
+    <table>
+      <caption>Instant yeast for four Neapolitan pizzas</caption>
+      <thead>
+        <tr>
+          <th scope="col">Schedule</th>
+          <th scope="col">Time</th>
+          <th scope="col">Yeast</th>
+        </tr>
+      </thead>
+      <tbody>
+        {yeast.map((row) => (
+          <tr>
+            <th scope="row">{row.name}</th>
+            <td>{row.time}</td>
+            <td>{row.grams}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="plan-title">
+    <header>
+      <h2 id="plan-title">A plan that works backwards</h2>
+      <p>
+        Choose when you want to eat and Crustulator lays out every step from mixing to preheating the oven. Turn on reminders and your phone gives you a nudge when it is time for the next one.
+      </p>
+    </header>
+    <Phone light={planLight} dark={planDark} alt="The bake plan with pizza time set for tomorrow at 6 PM and a timeline of steps" />
+  </section>
+
+  <section aria-labelledby="extras-title">
+    <header>
+      <h2 id="extras-title">The little things</h2>
+    </header>
+    <ul>
+      {extras.map(({ icon: Icon, text }) => (
+        <li>
+          <Icon aria-hidden="true" strokeWidth={2} />
+          <p>{text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section aria-labelledby="dark-title">
+    <header>
+      <h2 id="dark-title">Easy on the eyes at midnight</h2>
+      <p>Crustulator follows your phone into dark mode with a deep charred red that feels like the inside of a wood-fired oven.</p>
+    </header>
+    <Phone light={doughDark} alt="The dough screen in dark mode" />
+    <Phone light={planDark} alt="The bake plan in dark mode" />
+  </section>
+
+  <section aria-labelledby="start-title">
+    <header>
+      <h2 id="start-title">Make a dough tonight</h2>
+      <p>The web app works in any browser right now. The iPhone app is coming soon to the App Store.</p>
+      <p>
+        <a href="https://crustulator.com">Open the web app</a>
+      </p>
+    </header>
+  </section>
+</Base>

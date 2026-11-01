@@ -1,0 +1,11 @@
+{
+  "name": "@crustulator/brand",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    "./brand.css": "./brand.css",
+    "./logo.svg": "./logo.svg",
+    "./icon.png": "./icon.png",
+    "./fonts/*": "./fonts/*"
+  }
+}

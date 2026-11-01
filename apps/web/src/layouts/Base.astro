@@ -1,0 +1,50 @@
+---
+import '@crustulator/brand/brand.css'
+import '../styles/global.css'
+import wide from '@crustulator/brand/fonts/HKGroteskWide-ExtraBold.woff2?url'
+import AppPromo from '../calculator/AppPromo'
+import Footer from '../components/Footer.astro'
+import Header from '../components/Header.astro'
+import Logo from '../components/Logo.astro'
+
+interface Props {
+  title: string
+  description: string
+}
+
+const { title, description } = Astro.props
+const canonical = new URL(Astro.url.pathname, Astro.site)
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="preload" href={wide} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#fff888" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#2a0d0f" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Crustulator" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/og.png', Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <AppPromo client:idle>
+      <Logo />
+    </AppPromo>
+    <Footer />
+  </body>
+</html>

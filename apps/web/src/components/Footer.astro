@@ -1,0 +1,27 @@
+---
+import { styles } from '@crustulator/core'
+import Logo from './Logo.astro'
+import Mazzen from './Mazzen.astro'
+
+const year = new Date().getFullYear()
+---
+
+<footer>
+  <section aria-label="About Crustulator">
+    <Logo />
+    <p>Recipes stay in your browser. Yeast amounts come from a fermentation model, so treat them as a great starting point and watch the dough more than the clock.</p>
+  </section>
+  <nav aria-labelledby="footer-styles">
+    <h2 id="footer-styles">Dough for every style</h2>
+    <ul>
+      {styles.map((style) => (
+        <li><a href={`/styles/${style.id}`}>{style.name}</a></li>
+      ))}
+    </ul>
+  </nav>
+  <p>
+    <a href="https://crustulator.app">Crustulator for iPhone</a>
+    <small>©&nbsp;{year}&nbsp;Crustulator</small>
+    <a href="https://mazz.digital" target="_blank" rel="noreferrer" aria-label="mazz.digital"><Mazzen /></a>
+  </p>
+</footer>

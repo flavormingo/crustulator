@@ -1,0 +1,17 @@
+{
+  "name": "crustulator",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "pnpm --filter @crustulator/core test",
+    "typecheck": "pnpm -r typecheck",
+    "build": "pnpm -r build",
+    "mobile": "pnpm --filter @crustulator/mobile start",
+    "ios": "pnpm --filter @crustulator/mobile ios",
+    "web": "pnpm --filter @crustulator/web dev",
+    "site": "pnpm --filter @crustulator/site dev"
+  }
+}

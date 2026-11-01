@@ -1,0 +1,20 @@
+---
+import Logo from './Logo.astro'
+
+const path = Astro.url.pathname
+const calculator = path === '/' || path.startsWith('/styles')
+---
+
+<header>
+  <a href="/" aria-label="Crustulator home">
+    <Logo />
+    <span>Crustulator</span>
+  </a>
+  <nav aria-label="Main">
+    <ul>
+      <li><a href="/" aria-current={calculator ? 'page' : undefined}>Calculator</a></li>
+      <li><a href="/recipes" aria-current={path === '/recipes' ? 'page' : undefined}>Recipes</a></li>
+      <li><a href="https://crustulator.app">Get the app</a></li>
+    </ul>
+  </nav>
+</header>

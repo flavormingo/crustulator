@@ -1,0 +1,68 @@
+{
+  "expo": {
+    "name": "Crustulator",
+    "slug": "crustulator",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "crustulator",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#FFF888",
+    "ios": {
+      "bundleIdentifier": "com.crustulator.app",
+      "supportsTablet": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.crustulator.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF888",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFF888",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 140,
+          "dark": {
+            "backgroundColor": "#2A0D0F",
+            "image": "./assets/images/splash-icon.png"
+          }
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "../../brand/fonts/HKGrotesk-Regular.ttf",
+            "../../brand/fonts/HKGrotesk-Italic.ttf",
+            "../../brand/fonts/HKGrotesk-Bold.ttf",
+            "../../brand/fonts/HKGrotesk-BoldItalic.ttf",
+            "../../brand/fonts/HKGroteskWide-ExtraBold.otf"
+          ]
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#FB3A44"
+        }
+      ],
+      "expo-sqlite",
+      "expo-localization"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

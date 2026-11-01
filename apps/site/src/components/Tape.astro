@@ -1,0 +1,52 @@
+---
+interface Props {
+  value: number
+  from: number
+  label: string
+}
+
+const { value, from, label } = Astro.props
+const unit = 32
+const width = 2400
+const height = 210
+const center = width / 2
+const to = center - value * unit
+const start = center - from * unit
+const lowest = Math.floor(-Math.max(to, start) / unit) - 1
+const highest = Math.ceil((width - Math.min(to, start)) / unit) + 1
+
+const ticks = Array.from({ length: (highest - lowest) * 2 + 1 }, (_, index) => {
+  const mark = lowest + index / 2
+  const major = mark % 5 === 0
+  const mid = !major && mark % 2.5 === 0
+  return {
+    x: mark * unit,
+    length: major ? 66 : mid ? 46 : 28,
+    width: major ? 5 : 3.5,
+    opacity: major ? 1 : 0.5,
+  }
+})
+
+const numbers = ticks
+  .map((tick) => tick.x / unit)
+  .filter((mark) => mark % 5 === 0 && mark >= 0 && mark <= 100)
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  preserveAspectRatio="xMidYMid slice"
+  role="img"
+  aria-label={`A ruler slider set to ${value}% ${label}`}
+  style={`--from: ${start}px; --to: ${to}px`}
+>
+  <g>
+    {ticks.map((tick) => (
+      <line x1={tick.x} x2={tick.x} y1="74" y2={74 + tick.length} stroke="currentColor" stroke-width={tick.width} stroke-linecap="round" opacity={tick.opacity}></line>
+    ))}
+    {numbers.map((mark) => (
+      <text x={mark * unit} y="188" text-anchor="middle">{mark}</text>
+    ))}
+  </g>
+  <line x1={center} x2={center} y1="62" y2="160" stroke="currentColor" stroke-width="10" stroke-linecap="round"></line>
+  <text x={center} y="44" text-anchor="middle">{`${value}% ${label}`}</text>
+</svg>
