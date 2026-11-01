@@ -5,6 +5,7 @@ import {
   defaultRecipe,
   formatDuration,
   formatWeight,
+  isCold,
   planHours,
   schedulePresets,
   styles,
@@ -27,14 +28,20 @@ const menu = styles.map((style) => ({
 }))
 
 const neapolitan = defaultRecipe('neapolitan')
-const yeast = schedulePresets.map((preset) => {
+const schedules = schedulePresets.map((preset) => {
   const recipe = applySchedule(neapolitan, preset.id)
   return {
     name: preset.name,
+    hours: planHours(recipe),
     time: formatDuration(planHours(recipe)),
     grams: formatWeight(calculate(recipe).yeast, 'g'),
+    cold: recipe.stages.some((stage) => isCold(stage.temp)),
   }
 })
+const yeastGroups = [
+  { label: 'On the counter', rows: schedules.filter((row) => !row.cold).sort((a, b) => a.hours - b.hours) },
+  { label: 'In the fridge', rows: schedules.filter((row) => row.cold).sort((a, b) => a.hours - b.hours) },
+]
 
 const extras = [
   { icon: Bookmark, text: 'Save the doughs you love and pull them back up in one tap.' },
@@ -102,7 +109,7 @@ const extras = [
       </p>
     </header>
     <table>
-      <caption>Instant yeast for four Neapolitan pizzas</caption>
+      <caption>Active dry yeast for four Neapolitan pizzas</caption>
       <thead>
         <tr>
           <th scope="col">Schedule</th>
@@ -110,15 +117,20 @@ const extras = [
           <th scope="col">Yeast</th>
         </tr>
       </thead>
-      <tbody>
-        {yeast.map((row) => (
+      {yeastGroups.map((group) => (
+        <tbody>
           <tr>
-            <th scope="row">{row.name}</th>
-            <td>{row.time}</td>
-            <td>{row.grams}</td>
+            <th scope="rowgroup" colspan="3">{group.label}</th>
           </tr>
-        ))}
-      </tbody>
+          {group.rows.map((row) => (
+            <tr>
+              <th scope="row">{row.name}</th>
+              <td>{row.time}</td>
+              <td>{row.grams}</td>
+            </tr>
+          ))}
+        </tbody>
+      ))}
     </table>
   </section>
 

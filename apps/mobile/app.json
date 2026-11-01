@@ -9,14 +9,14 @@
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#FFF888",
     "ios": {
-      "bundleIdentifier": "com.crustulator.app",
-      "supportsTablet": true,
+      "bundleIdentifier": "app.crustulator",
+      "supportsTablet": false,
       "config": {
         "usesNonExemptEncryption": false
       }
     },
     "android": {
-      "package": "com.crustulator.app",
+      "package": "app.crustulator",
       "adaptiveIcon": {
         "backgroundColor": "#FFF888",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

@@ -10,6 +10,7 @@ import {
   describeEvent,
   getStyle,
   matchSchedule,
+  mixWaterTemperature,
   normalizeRecipe,
   planHours,
   setPrefermentType,
@@ -40,6 +41,18 @@ describe('plans', () => {
     expect(events[0]?.kind).toBe('preferment')
     expect(events[1]).toMatchObject({ kind: 'mix', at: 16 * HOUR })
     expect(events.at(-1)?.at).toBe(22 * HOUR)
+  })
+
+  it('tells you what temperature the water should be', () => {
+    const recipe = defaultRecipe('new-york')
+    const style = getStyle('new-york')
+    const dough = calculate(recipe)
+    const events = buildPlan(recipe, style.oven, { start: 0 })
+    const mix = events.find((event) => event.kind === 'mix')!
+    const copy = describeEvent(mix, { recipe, dough, oven: style.oven, preferences: { weight: 'g', temperature: 'c', length: 'cm', salt: 'fine' } })
+    expect(copy.detail).toContain('water at about')
+    expect(mixWaterTemperature(recipe)).toBeGreaterThan(20)
+    expect(mixWaterTemperature(recipe)).toBeLessThan(35)
   })
 
   it('describes pan steps and fridge moves', () => {

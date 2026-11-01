@@ -1,6 +1,7 @@
 import { totalHours, type Dough } from './dough'
 import type { Oven, Preferences, Recipe, Stage } from './types'
 import { formatDuration, formatOvenRange, formatOvenTemperature, formatTemperature, formatWeight } from './units'
+import { waterTemperature } from './water'
 import { FRIDGE_LIMIT } from './yeast'
 
 export const HOUR = 3_600_000
@@ -70,6 +71,11 @@ export interface EventCopy {
   detail: string
 }
 
+export function mixWaterTemperature(recipe: Recipe): number {
+  const room = recipe.stages.find((stage) => !isCold(stage.temp))?.temp ?? 22
+  return Math.min(45, Math.max(1, waterTemperature({ doughTemp: recipe.doughTemp, flourTemp: room, roomTemp: room, method: 'hand' })))
+}
+
 function place(stage: Stage, preferences: Preferences): string {
   return isCold(stage.temp)
     ? 'in the fridge'
@@ -95,15 +101,15 @@ export function describeEvent(event: PlanEvent, context: EventContext): EventCop
           : `Cover and leave it for ${formatDuration(recipe.preferment.hours)}.`,
       }
     }
-    case 'mix':
-      return {
-        title: 'Mix the dough',
-        detail: stage?.step === 'balls'
-          ? `Knead until smooth, shape ${count} ${pieces} of ${weight(dough.ball)} and rest them ${rest}.`
-          : stage?.step === 'pan'
-            ? `Knead until smooth, press into ${count} oiled ${pieces} and proof ${rest}.`
-            : `Knead until smooth and elastic. Let it rise in one piece ${rest}.`,
-      }
+    case 'mix': {
+      const water = `Mixing by hand, start with water at about ${formatTemperature(mixWaterTemperature(recipe), preferences.temperature)}.`
+      const knead = stage?.step === 'balls'
+        ? `Knead until smooth, shape ${count} ${pieces} of ${weight(dough.ball)} and rest them ${rest}.`
+        : stage?.step === 'pan'
+          ? `Knead until smooth, press into ${count} oiled ${pieces} and proof ${rest}.`
+          : `Knead until smooth and elastic. Let it rise in one piece ${rest}.`
+      return { title: 'Mix the dough', detail: `${water} ${knead}` }
+    }
     case 'divide':
       return {
         title: stage && isCold(stage.temp) ? 'Ball it and chill' : 'Divide and ball',

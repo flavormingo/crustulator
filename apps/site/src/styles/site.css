@@ -519,6 +519,20 @@ table {
     font-weight: 800;
   }
 
+  & tbody th[scope="rowgroup"] {
+    padding-block-end: 0.35rem;
+    text-align: start;
+    border-block-end: 0;
+    color: var(--muted);
+    font-family: var(--text);
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+
+  & tbody + tbody th[scope="rowgroup"] {
+    padding-block-start: 1.75rem;
+  }
+
   & tbody td:nth-child(2) {
     padding-inline: 1rem;
     color: var(--muted);
