@@ -1,6 +1,6 @@
 import Storage from 'expo-sqlite/kv-store'
 
-const pending = new Map<string, ReturnType<typeof setTimeout>>()
+const pending = new Map<string, { timer: ReturnType<typeof setTimeout>; write: () => void }>()
 
 export function readJson<T>(key: string, parse: (value: unknown) => T, fallback: T): T {
   try {
@@ -13,13 +13,23 @@ export function readJson<T>(key: string, parse: (value: unknown) => T, fallback:
 
 export function writeJson(key: string, value: unknown, delay = 0) {
   const existing = pending.get(key)
-  if (existing) clearTimeout(existing)
+  if (existing) clearTimeout(existing.timer)
   const write = () => {
     pending.delete(key)
     try {
       Storage.setItemSync(key, JSON.stringify(value))
     } catch {}
   }
-  if (delay <= 0) write()
-  else pending.set(key, setTimeout(write, delay))
+  if (delay <= 0) {
+    write()
+    return
+  }
+  pending.set(key, { timer: setTimeout(write, delay), write })
+}
+
+export function flushJson() {
+  for (const entry of [...pending.values()]) {
+    clearTimeout(entry.timer)
+    entry.write()
+  }
 }

@@ -10,7 +10,7 @@ export const model = {
   step: 1 / 30,
   margins: { tight: 1, balanced: 1.5, relaxed: 2.25 } satisfies Record<Margin, number>,
   preferment: { scale: 1.3, decay: 0.23, reference: 21, biga: 0.5, growth: 2, max: 1 },
-  starter: { intercept: 0.6014, slope: 5.368, bacteria: 0.5, norm: 0.54648, coldFloor: 0.25, coldLimit: 1 },
+  starter: { intercept: 0.6014, slope: 5.368, bacteria: 0.5, norm: 0.54648, coldFloor: 0.35, coldReference: 15 },
   formula: { hydration: 65, salt: 2, fat: 2, min: 0.7, max: 2.5 },
 }
 
@@ -36,13 +36,18 @@ function yeastRate(temp: number): number {
   return heatPenalty(temp) / hoursToReady(temp)
 }
 
-function starterRate(temp: number): number {
-  if (temp <= -2 || temp >= 50) return 0
+function cultureRate(temp: number): number {
   const t = Math.min(temp, 35)
   const yeast = 0.0124 * (36 - t) ** 2.981 * Math.exp(-0.3355 * (36 - t))
   const bacteria = 0.1267 * (41 - t) ** 1.5404 * Math.exp(-0.1931 * (41 - t))
-  const rate = (heatPenalty(temp) * (yeast + model.starter.bacteria * bacteria)) / model.starter.norm
-  return temp >= model.starter.coldLimit ? Math.max(rate, model.starter.coldFloor) : rate
+  return (heatPenalty(temp) * (yeast + model.starter.bacteria * bacteria)) / model.starter.norm
+}
+
+function starterRate(temp: number): number {
+  if (temp <= -2 || temp >= 50) return 0
+  const { coldFloor, coldReference } = model.starter
+  const share = coldFloor + (1 - coldFloor) * (Math.min(Math.max(temp, 0), coldReference) / coldReference)
+  return Math.max(cultureRate(temp), cultureRate(coldReference) * share)
 }
 
 export function fermentationRate(temp: number): number {

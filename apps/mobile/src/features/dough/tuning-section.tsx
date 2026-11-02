@@ -1,4 +1,4 @@
-import { formatPercent, formatTemperature, isCold, loadingScale, temperatureScale, waterTemperature } from '@crustulator/core'
+import { formatPercent, formatTemperature, isCold, limits, loadingScale, temperatureScale, waterTemperature } from '@crustulator/core'
 
 import { Section } from '@/components/controls'
 import { MeasureRuler } from '@/components/measure-ruler'
@@ -14,7 +14,7 @@ export function TuningSection() {
     <Section title="Fine tuning" collapsible>
       <MeasureRuler
         label="Dough temperature"
-        scale={temperatureScale(preferences.temperature, [16, 30])}
+        scale={temperatureScale(preferences.temperature, limits.doughTemp)}
         value={recipe.doughTemp}
         onChange={(doughTemp) => setRecipe((current) => ({ ...current, doughTemp }))}
         note={`Kneading by hand in a ${formatTemperature(room, preferences.temperature)} kitchen? Use water at about ${formatTemperature(Math.max(1, water), preferences.temperature)}.`}
@@ -29,8 +29,8 @@ export function TuningSection() {
       <Ruler
         label="Bowl residue"
         value={recipe.residue}
-        min={0}
-        max={10}
+        min={limits.residue[0]}
+        max={limits.residue[1]}
         step={0.5}
         major={2}
         format={formatPercent}

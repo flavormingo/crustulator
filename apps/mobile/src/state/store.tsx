@@ -14,8 +14,9 @@ import {
 } from '@crustulator/core'
 import { getLocales } from 'expo-localization'
 import { createContext, use, useEffect, useState, type ReactNode } from 'react'
+import { AppState } from 'react-native'
 
-import { readJson, writeJson } from './storage'
+import { flushJson, readJson, writeJson } from './storage'
 
 export type { SavedRecipe }
 
@@ -40,7 +41,7 @@ interface Store {
   updateSaved: (id: string, patch: Partial<Omit<SavedRecipe, 'id' | 'created'>>) => void
   removeSaved: (id: string) => void
   plan: Plan
-  setPlan: (patch: Partial<Plan>) => void
+  setPlan: (patch: Partial<Plan> | ((current: Plan) => Partial<Plan>)) => void
   settings: Settings
   setSettings: (patch: Partial<Settings>) => void
 }
@@ -73,10 +74,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [settings, setSettingsState] = useState<Settings>(() => readJson('settings', parseSettings, parseSettings(null)))
 
   useEffect(() => writeJson('recipe', recipe, 400), [recipe])
-  useEffect(() => writeJson('preferences', preferences), [preferences])
+  useEffect(() => writeJson('preferences', preferences, 400), [preferences])
   useEffect(() => writeJson('saved', saved), [saved])
-  useEffect(() => writeJson('plan', plan), [plan])
+  useEffect(() => writeJson('plan', plan, 400), [plan])
   useEffect(() => writeJson('settings', settings), [settings])
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') flushJson()
+    })
+    return () => subscription.remove()
+  }, [])
 
   const dough = calculate(recipe)
 
@@ -96,7 +104,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setSaved((current) => current.map((item) => (item.id === id ? { ...item, ...patch, updated: Date.now() } : item))),
     removeSaved: (id) => setSaved((current) => current.filter((item) => item.id !== id)),
     plan,
-    setPlan: (patch) => setPlanState((current) => ({ ...current, ...patch })),
+    setPlan: (patch) => setPlanState((current) => ({ ...current, ...(typeof patch === 'function' ? patch(current) : patch) })),
     settings,
     setSettings: (patch) => setSettingsState((current) => ({ ...current, ...patch })),
   }

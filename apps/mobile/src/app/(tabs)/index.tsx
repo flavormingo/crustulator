@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router'
 import { Bookmark, BookmarkSolid, NavArrowDown, Settings, ShareIos, Timer } from 'iconoir-react-native'
 import { useRef, useState } from 'react'
 import { Alert, Platform, Pressable, Share, StyleSheet, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { Button, IconButton } from '@/components/controls'
 import { Logo } from '@/components/logo'
@@ -23,6 +24,7 @@ import { usePalette } from '@/theme/use-palette'
 
 export default function DoughScreen() {
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const palette = usePalette()
   const { recipe, dough, preferences, saveRecipe } = useStore()
   const style = getStyle(recipe.style)
@@ -39,7 +41,7 @@ export default function DoughScreen() {
         {
           text: 'Save',
           onPress: (name?: string) => {
-            const entry = saveRecipe(name ?? recipeTitle(recipe))
+            const entry = saveRecipe(name?.trim() || recipeTitle(recipe))
             success()
             setSavedName(entry.name)
             setTimeout(() => setSavedName(null), 2400)
@@ -60,7 +62,7 @@ export default function DoughScreen() {
   return (
     <Screen
       contentStyle={styles.content}
-      onScroll={(event) => setPeek(event.nativeEvent.contentOffset.y + event.nativeEvent.contentInset.top > threshold.current)}
+      onScroll={(event) => setPeek(event.nativeEvent.contentOffset.y + insets.top > threshold.current)}
       overlay={peek ? <PeekBar recipe={recipe} dough={dough} preferences={preferences} /> : null}
     >
       <View style={styles.topBar}>

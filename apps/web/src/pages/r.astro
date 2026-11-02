@@ -3,7 +3,7 @@ import Shared from '../calculator/Shared'
 import Base from '../layouts/Base.astro'
 ---
 
-<Base title="A pizza dough for you | Crustulator" description="Someone shared a pizza dough recipe with you. Open it to see every ingredient and plan your bake.">
+<Base title="A pizza dough for you | Crustulator" description="Someone shared a pizza dough recipe with you. Open it to see every ingredient and plan your bake." noindex>
   <Shared client:only="react" />
   <noscript>
     <p>Shared recipes open in your browser, so this page needs JavaScript.</p>

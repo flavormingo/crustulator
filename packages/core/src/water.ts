@@ -7,12 +7,6 @@ export const frictionFactor: Record<MixMethod, number> = {
   processor: 14,
 }
 
-export const mixMethodNames: Record<MixMethod, string> = {
-  hand: 'By hand',
-  stand: 'Stand mixer',
-  spiral: 'Spiral mixer',
-  processor: 'Food processor',
-}
 
 export interface WaterInput {
   doughTemp: number

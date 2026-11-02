@@ -1,5 +1,5 @@
-import type { Recipe, Shape } from './types'
-import { convertYeast, instantYeastFor, prefermentYeastFor, starterFor, toInstant } from './yeast'
+import type { Recipe, Shape, YeastType } from './types'
+import { convertYeast, instantYeastFor, prefermentYeastFor, starterFor, toInstant, yeastFactor } from './yeast'
 
 export type IngredientKey = 'flour' | 'water' | 'salt' | 'oil' | 'sugar' | 'yeast' | 'starter' | 'preferment'
 
@@ -18,6 +18,7 @@ export type WarningCode =
   | 'yeast-heavy'
   | 'yeast-light'
   | 'starter-heavy'
+  | 'starter-light'
   | 'starter-water'
   | 'preferment-water'
   | 'no-time'
@@ -43,6 +44,12 @@ export interface Dough {
 
 export const MAX_INSTANT = 3
 export const MAX_STARTER = 60
+export const MIN_STARTER = 1
+
+export function yeastLimit(yeast: YeastType): number {
+  return yeast === 'sourdough' ? MAX_STARTER : Math.ceil(MAX_INSTANT * yeastFactor[yeast] * 100) / 100
+}
+export const MAX_YEAST_WARNING = 1
 
 export function area(shape: Shape): number {
   if (shape.kind === 'round') return Math.PI * (shape.diameter / 2) ** 2
@@ -83,7 +90,8 @@ export function calculate(recipe: Recipe): Dough {
   if (sourdough) {
     const starter = hours > 0 ? starterFor(recipe.stages, recipe.doughTemp, recipe.starterHydration, options) : MAX_STARTER
     mainPercent = auto ? Math.min(MAX_STARTER, starter) : (recipe.yeastPercent ?? 0)
-    if (auto && starter > 35) warnings.push('starter-heavy')
+    if (mainPercent > 35) warnings.push('starter-heavy')
+    if (mainPercent < MIN_STARTER) warnings.push('starter-light')
   } else {
     const needed = hours > 0 ? instantYeastFor(recipe.stages, recipe.doughTemp, options) : MAX_INSTANT
     const prefermentYeast = preferment ? prefermentYeastFor(preferment) : null
@@ -92,8 +100,8 @@ export function calculate(recipe: Recipe): Dough {
     const carried = prefermentYeast ? prefermentYeast.carry * share : 0
     mainInstant = auto ? Math.min(MAX_INSTANT, Math.max(0, needed - carried)) : toInstant(recipe.yeastPercent ?? 0, commercial)
     mainPercent = convertYeast(mainInstant, commercial)
-    if (auto && needed >= 2) warnings.push('yeast-heavy')
-    if (auto && !preferment && mainInstant > 0 && mainInstant < 0.01) warnings.push('yeast-light')
+    if (mainInstant >= MAX_YEAST_WARNING) warnings.push('yeast-heavy')
+    if (!preferment && mainInstant > 0 && mainInstant < 0.01) warnings.push('yeast-light')
   }
 
   const prefermentPercent = convertYeast(prefermentInstant, commercial)

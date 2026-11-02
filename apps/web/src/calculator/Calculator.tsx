@@ -55,13 +55,14 @@ export default function Calculator({ style: pageStyle }: CalculatorProps) {
   const [bake, setBake] = usePersistent<number>(
     'bake',
     0,
-    (stored) => (stored && stored > Date.now() - 12 * HOUR ? stored : nextBake(planHours(initial))),
+    (stored) => (stored && stored > Date.now() - 12 * HOUR ? stored : 0),
     (value) => (typeof value === 'number' ? value : 0),
   )
   const [message, setMessage] = useState('')
   const dialog = useRef<HTMLDialogElement>(null)
   const dough = calculate(recipe)
   const style = getStyle(recipe.style)
+  const bakeAt = bake > 0 ? bake : nextBake(planHours(recipe))
   const update = (next: (current: Recipe) => Recipe) => setRecipe(next)
 
   const say = (text: string) => {
@@ -70,8 +71,12 @@ export default function Calculator({ style: pageStyle }: CalculatorProps) {
   }
 
   const choose = (id: StyleId) => {
+    if (pageStyle && id !== pageStyle) {
+      writeStored('recipe', applyStyle(recipe, id))
+      window.location.assign(`/styles/${id}`)
+      return
+    }
     setRecipe((current) => applyStyle(current, id))
-    if (pageStyle) window.history.replaceState(null, '', `/styles/${id}`)
   }
 
   const save = () => {
@@ -178,7 +183,14 @@ export default function Calculator({ style: pageStyle }: CalculatorProps) {
         </details>
       </form>
 
-      {ready ? <Plan recipe={recipe} dough={dough} preferences={preferences} bake={bake} onBakeChange={setBake} /> : null}
+      {ready ? (
+        <Plan recipe={recipe} dough={dough} preferences={preferences} bake={bakeAt} onBakeChange={setBake} />
+      ) : (
+        <section id="plan" aria-labelledby="plan-title">
+          <h2 id="plan-title">Bake plan</h2>
+          <p>Working out when to mix…</p>
+        </section>
+      )}
 
       <dialog ref={dialog} aria-labelledby="style-picker" onClick={(event) => event.target === dialog.current && dialog.current.close()}>
         <form method="dialog">

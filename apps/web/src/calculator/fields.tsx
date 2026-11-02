@@ -107,10 +107,8 @@ interface StepperProps {
 }
 
 export function Stepper({ label, value, min, max, unit, onChange }: StepperProps) {
-  const id = useId()
   return (
-    <div role="group" aria-labelledby={`${id}-label`}>
-      <span id={`${id}-label`} hidden>{label}</span>
+    <div role="group">
       <button type="button" aria-label={`Fewer ${unit(2)}`} disabled={value <= min} onClick={() => onChange(Math.max(min, value - 1))}>
         <Minus aria-hidden="true" />
       </button>

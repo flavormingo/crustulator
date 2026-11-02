@@ -2,11 +2,11 @@ import Svg, { G, Line, Path } from 'react-native-svg'
 
 import { usePalette } from '@/theme/use-palette'
 
-export function Logo({ size = 32, color }: { size?: number; color?: string }) {
+export function Logo({ size = 32, color, label }: { size?: number; color?: string; label?: string }) {
   const palette = usePalette()
   const ink = color ?? palette.accent
   return (
-    <Svg width={size} height={size} viewBox="0 0 345 345" accessibilityLabel="Crustulator">
+    <Svg width={size} height={size} viewBox="0 0 345 345" accessibilityLabel={label} accessibilityElementsHidden={!label} importantForAccessibility={label ? "yes" : "no-hide-descendants"}>
       <G transform="translate(13 13)" stroke={ink} strokeWidth={24} fill="none">
         <Path d="M60.3904035,267.950392 L0.263427129,11.8188549 C-1.42021256,4.64661467 5.24597179,-1.67761291 12.2984395,0.401427272 L268.069651,75.8025014" />
         <Path

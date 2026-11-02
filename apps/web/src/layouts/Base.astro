@@ -10,10 +10,12 @@ import Logo from '../components/Logo.astro'
 interface Props {
   title: string
   description: string
+  noindex?: boolean
 }
 
-const { title, description } = Astro.props
-const canonical = new URL(Astro.url.pathname, Astro.site)
+const { title, description, noindex = false } = Astro.props
+const path = Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, '')
+const canonical = new URL(path.length > 1 ? path.replace(/\/$/, '') : '/', Astro.site)
 ---
 
 <!doctype html>
@@ -24,6 +26,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="preload" href={wide} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -41,8 +44,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
+    <a href="#main">Skip to the calculator</a>
     <Header />
-    <main>
+    <main id="main">
       <slot />
     </main>
     <AppPromo client:idle>

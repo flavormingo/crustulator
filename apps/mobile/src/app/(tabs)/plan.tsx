@@ -11,7 +11,6 @@ import {
   planHours,
   recipeTitle,
   roundUp,
-  type PlanEvent,
 } from '@crustulator/core'
 import { DatePicker, Host } from '@expo/ui/swift-ui'
 import { tint } from '@expo/ui/swift-ui/modifiers'
@@ -51,7 +50,8 @@ function Rail({ last }: { last: boolean }) {
 
 export default function PlanScreen() {
   const palette = usePalette()
-  const now = useNow()
+  const focused = useIsFocused()
+  const now = useNow(focused ? 30_000 : null)
   const { recipe, dough, preferences, plan, setPlan } = useStore()
   const style = getStyle(recipe.style)
   const hours = planHours(recipe)
@@ -59,7 +59,6 @@ export default function PlanScreen() {
   const start = events[0]?.at ?? plan.bake
   const late = start < now - 5 * 60_000
   const earliest = roundUp(now + hours * HOUR, 15)
-  const focused = useIsFocused()
   const busy = focused && events.some((event) => Math.abs(event.at - now) < HOUR)
 
   useEffect(() => {
@@ -78,9 +77,9 @@ export default function PlanScreen() {
     setPlan({ reminders: next })
   }
 
-  const toggleDone = (event: PlanEvent) => {
+  const toggleDone = (index: number) => {
     tick()
-    setPlan({ done: plan.done.includes(event.at) ? plan.done.filter((at) => at !== event.at) : [...plan.done, event.at] })
+    setPlan((current) => ({ done: current.done.includes(index) ? current.done.filter((item) => item !== index) : [...current.done, index] }))
   }
 
   return (
@@ -115,10 +114,10 @@ export default function PlanScreen() {
 
       <Toggle label="Remind me at each step" value={plan.reminders} onChange={toggleReminders} />
 
-      <View accessibilityLabel="Steps">
+      <View>
         {events.map((event, index) => {
           const copy = describeEvent(event, { recipe, dough, oven: style.oven, preferences })
-          const done = plan.done.includes(event.at)
+          const done = plan.done.includes(index)
           const past = event.at < now
           return (
             <View key={`${event.kind}-${event.at}`} style={styles.event}>
@@ -128,7 +127,7 @@ export default function PlanScreen() {
                   accessibilityState={{ checked: done }}
                   accessibilityLabel={`Mark ${copy.title} as done`}
                   hitSlop={10}
-                  onPress={() => toggleDone(event)}
+                  onPress={() => toggleDone(index)}
                   style={[styles.node, { borderColor: palette.accent, backgroundColor: done ? palette.accent : palette.ground }]}
                 >
                   {done ? <Check width={18} height={18} color={palette.onAccent} strokeWidth={3} /> : null}

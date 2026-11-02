@@ -129,6 +129,24 @@ svg {
   display: none !important;
 }
 
+body > a[href="#main"] {
+  position: fixed;
+  z-index: 10;
+  inset-block-start: 1rem;
+  inset-inline-start: 1rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+  text-decoration: none;
+  translate: 0 -200%;
+
+  &:focus-visible {
+    translate: 0 0;
+  }
+}
+
 body > header {
   width: 100%;
   max-width: var(--page);
@@ -403,7 +421,7 @@ article aside {
     }
   }
 
-  > p[role="status"] {
+  > p:has(> svg) {
     display: flex;
     gap: 0.75rem;
     padding: 1rem 1.1rem;
@@ -424,13 +442,8 @@ article aside {
     padding: 0;
     list-style: none;
 
-    > li:first-child {
+    > li:first-child:not(:nth-last-child(2)) {
       grid-column: 1 / -1;
-    }
-
-    > li:only-child,
-    > li:nth-child(2):last-child {
-      grid-column: auto;
     }
 
     a,
@@ -469,10 +482,6 @@ article aside {
     min-height: 1.5em;
     color: var(--muted);
     font-size: 0.95rem;
-
-    &:empty {
-      display: none;
-    }
   }
 }
 
@@ -589,8 +598,7 @@ fieldset:has(> label > input[type="radio"]) {
       background: var(--faint);
     }
 
-    &:has(> input:checked),
-    &[aria-pressed="true"] {
+    &:has(> input:checked) {
       background: var(--accent);
       color: var(--on-accent);
     }
@@ -874,10 +882,6 @@ article:has(> form) > section > p > button {
   }
 }
 
-[role="group"] > button {
-  width: 3.4rem;
-  height: 3.4rem;
-}
 
 article:has(> form) > section {
   display: grid;

@@ -8,7 +8,6 @@ export interface Palette {
   scheme: 'light' | 'dark'
   ground: string
   raised: string
-  sunken: string
   ink: string
   muted: string
   accent: string
@@ -22,7 +21,6 @@ export const palettes: Record<'light' | 'dark', Palette> = {
     scheme: 'light',
     ground: brand.butter,
     raised: '#FFFCC7',
-    sunken: '#F7EC6E',
     ink: '#4A1215',
     muted: '#7E4B3A',
     accent: brand.sauce,
@@ -34,7 +32,6 @@ export const palettes: Record<'light' | 'dark', Palette> = {
     scheme: 'dark',
     ground: brand.oven,
     raised: '#3A1417',
-    sunken: '#1F090B',
     ink: brand.butter,
     muted: '#D9C98A',
     accent: brand.sauce,

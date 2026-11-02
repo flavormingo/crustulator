@@ -10,6 +10,7 @@ import {
   type StageStep,
 } from '@crustulator/core'
 import { Plus } from 'iconoir-react-native'
+import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Button, Chips, Section } from '@/components/controls'
@@ -20,6 +21,7 @@ import { space } from '@/theme/tokens'
 
 export function ScheduleSection() {
   const { recipe, setRecipe, preferences } = useStore()
+  const [openStep, setOpenStep] = useState<number | null>(null)
   const hours = planHours(recipe)
   const vibe = patienceVibe(hours)
 
@@ -29,8 +31,10 @@ export function ScheduleSection() {
       stages: current.stages.map((stage, stageIndex) => (stageIndex === index ? { ...stage, ...patch } : stage)),
     }))
 
-  const removeStage = (index: number) =>
+  const removeStage = (index: number) => {
+    setOpenStep((current) => (current === null || current < index ? current : current === index ? null : current - 1))
     setRecipe((current) => (current.stages.length > 1 ? { ...current, stages: current.stages.filter((_, stageIndex) => stageIndex !== index) } : current))
+  }
 
   const addStage = () =>
     setRecipe((current) => {
@@ -55,6 +59,8 @@ export function ScheduleSection() {
             stage={stage}
             preferences={preferences}
             canRemove={recipe.stages.length > 1}
+            open={openStep === index}
+            onToggle={() => setOpenStep(openStep === index ? null : index)}
             onChange={(patch) => updateStage(index, patch)}
             onRemove={() => removeStage(index)}
           />

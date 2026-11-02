@@ -1,4 +1,4 @@
-import { formatPercent, hydrationVibe } from '@crustulator/core'
+import { formatPercent, hydrationVibe, limits } from '@crustulator/core'
 
 import { Section } from '@/components/controls'
 import { Ruler } from '@/components/ruler'
@@ -14,17 +14,17 @@ export function FormulaSection() {
       <Ruler
         label="Hydration"
         value={recipe.hydration}
-        min={45}
-        max={100}
+        min={limits.hydration[0]}
+        max={limits.hydration[1]}
         step={0.5}
         major={10}
         format={formatPercent}
         onChange={set('hydration')}
         note={`${vibe.label}. ${vibe.note}`}
       />
-      <Ruler label="Salt" value={recipe.salt} min={0} max={5} step={0.1} major={10} format={formatPercent} onChange={set('salt')} />
-      <Ruler label="Olive oil" value={recipe.oil} min={0} max={20} step={0.5} major={10} format={formatPercent} onChange={set('oil')} />
-      <Ruler label="Sugar" value={recipe.sugar} min={0} max={6} step={0.25} major={4} format={formatPercent} onChange={set('sugar')} />
+      <Ruler label="Salt" value={recipe.salt} min={limits.salt[0]} max={limits.salt[1]} step={0.1} major={10} format={formatPercent} onChange={set('salt')} />
+      <Ruler label="Olive oil" value={recipe.oil} min={limits.oil[0]} max={limits.oil[1]} step={0.5} major={10} format={formatPercent} onChange={set('oil')} />
+      <Ruler label="Sugar" value={recipe.sugar} min={limits.sugar[0]} max={limits.sugar[1]} step={0.25} major={4} format={formatPercent} onChange={set('sugar')} />
     </Section>
   )
 }

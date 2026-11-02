@@ -57,11 +57,6 @@ export function stagePlace(stage: Stage, preferences: Preferences): string {
   return `${where} at ${formatTemperature(stage.temp, preferences.temperature)}`
 }
 
-export const shapeNames: Record<Shape['kind'], string> = {
-  ball: 'Ball weight',
-  round: 'Round',
-  pan: 'Pan',
-}
 
 export const saltNames: Record<SaltType, string> = {
   fine: 'Fine sea salt',
@@ -101,6 +96,7 @@ export const warningCopy: Record<WarningCode, string> = {
   'yeast-heavy': 'That is a lot of yeast. A longer schedule tastes better.',
   'yeast-light': 'That is a tiny amount of yeast. Dissolve 1 g in 100 g of water and weigh out the solution instead.',
   'starter-heavy': 'Sourdough needs more time than this. Try a longer schedule.',
+  'starter-light': 'That is barely any starter. A shorter or cooler schedule gives you something you can weigh.',
   'starter-water': 'The starter brings more water than this hydration allows.',
   'preferment-water': 'The preferment needs more water than this hydration allows.',
   'no-time': 'Give the dough some time to rise.',

@@ -11,17 +11,30 @@ function stamp(time: number): string {
 }
 
 function escapeText(text: string): string {
-  return text.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r\n|\r|\n|\u2028|\u2029/g, '\\n')
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '')
 }
 
 function fold(line: string): string {
+  const encoder = new TextEncoder()
   const parts: string[] = []
-  let rest = line
-  while (rest.length > 74) {
-    parts.push(rest.slice(0, 74))
-    rest = ` ${rest.slice(74)}`
+  let current = ''
+  let octets = 0
+  for (const character of line) {
+    const size = encoder.encode(character).length
+    if (octets + size > 74) {
+      parts.push(current)
+      current = ' '
+      octets = 1
+    }
+    current += character
+    octets += size
   }
-  parts.push(rest)
+  parts.push(current)
   return parts.join('\r\n')
 }
 

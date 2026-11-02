@@ -12,7 +12,7 @@ const style = getStyle(Astro.params.style as StyleId)
 
 <Base
   title={`${style.name} pizza dough calculator | Crustulator`}
-  description={`${style.tagline} Get exact flour, water, salt and yeast amounts for ${style.name.toLowerCase()} pizza dough on your schedule.`}
+  description={`${style.tagline} Get exact flour, water, salt and yeast amounts for ${style.name} pizza dough on your schedule.`}
 >
   <Calculator client:load style={style.id} />
   <section aria-labelledby="about-style">

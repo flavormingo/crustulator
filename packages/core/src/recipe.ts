@@ -1,4 +1,4 @@
-import { ballWeight, diameterFor } from './dough'
+import { area, ballWeight, diameterFor } from './dough'
 import { defaultStyle, getStyle, styleIds } from './styles'
 import type { Margin, Preferment, PrefermentType, Recipe, Shape, Stage, StageStep, StyleId, YeastType } from './types'
 
@@ -12,7 +12,7 @@ export const limits = {
   salt: [0, 5],
   oil: [0, 25],
   sugar: [0, 10],
-  yeastPercent: [0, 50],
+  yeastPercent: [0, 60],
   starterHydration: [40, 200],
   prefermentFlour: [5, 100],
   prefermentHydration: [40, 150],
@@ -23,8 +23,6 @@ export const limits = {
   doughTemp: [10, 35],
   stages: [1, 6],
 } as const satisfies Record<string, readonly [number, number]>
-
-export type Limit = keyof typeof limits
 
 const yeastTypes: YeastType[] = ['instant', 'active', 'fresh', 'sourdough']
 const prefermentTypes: PrefermentType[] = ['none', 'poolish', 'biga']
@@ -144,15 +142,23 @@ export function setShapeKind(recipe: Recipe, kind: Shape['kind']): Recipe {
   if (kind === 'ball') {
     return { ...recipe, shape: { kind, weight: clamp(Math.round(weight), limits.weight) } }
   }
+  const tooThick = (size: number) => weight / size > limits.loading[1]
+  const tooThin = (size: number) => weight / size < limits.loading[0]
   if (kind === 'round') {
-    return { ...recipe, shape: { kind, diameter: clamp(Math.round(diameterFor(weight, recipe.loading)), limits.diameter) } }
+    let diameter = clamp(Math.round(diameterFor(weight, recipe.loading)), limits.diameter)
+    while (diameter < limits.diameter[1] && tooThick(area({ kind: 'round', diameter }))) diameter += 1
+    while (diameter > limits.diameter[0] && tooThin(area({ kind: 'round', diameter }))) diameter -= 1
+    const loading = clamp(weight / area({ kind: 'round', diameter }), limits.loading)
+    return { ...recipe, loading, shape: { kind, diameter } }
   }
-  const area = weight / recipe.loading
-  const width = Math.sqrt((area * 3) / 4)
-  return {
-    ...recipe,
-    shape: { kind, width: clamp(Math.round(width), limits.side), length: clamp(Math.round(area / width), limits.side) },
-  }
+  const target = weight / recipe.loading
+  let width = clamp(Math.round(Math.sqrt((target * 3) / 4)), limits.side)
+  let length = clamp(Math.round(target / width), limits.side)
+  while (length < limits.side[1] && tooThick(area({ kind: 'pan', width, length }))) length += 1
+  while (width < limits.side[1] && tooThick(area({ kind: 'pan', width, length }))) width += 1
+  while (length > limits.side[0] && tooThin(area({ kind: 'pan', width, length }))) length -= 1
+  const loading = clamp(weight / area({ kind: 'pan', width, length }), limits.loading)
+  return { ...recipe, loading, shape: { kind, width, length } }
 }
 
 export function setYeast(recipe: Recipe, yeast: YeastType): Recipe {
@@ -253,14 +259,13 @@ export function applySchedule(recipe: Recipe, id: SchedulePreset['id']): Recipe 
 }
 
 export function matchSchedule(recipe: Recipe): SchedulePreset['id'] | null {
-  const pan = isPanStyle(recipe)
   for (const preset of schedulePresets) {
     const candidate = applySchedule({ ...recipe, stages: [] }, preset.id).stages
     if (
       candidate.length === recipe.stages.length &&
       candidate.every((stage, index) => {
         const other = recipe.stages[index]
-        return other && other.hours === stage.hours && other.temp === stage.temp && (pan || other.step === stage.step)
+        return other !== undefined && other.hours === stage.hours && other.temp === stage.temp && other.step === stage.step
       })
     ) {
       return preset.id

@@ -2,6 +2,7 @@ import {
   formatDuration,
   hoursScale,
   isCold,
+  limits,
   stagePlace,
   stageTitle,
   temperatureScale,
@@ -10,7 +11,6 @@ import {
   type StageStep,
 } from '@crustulator/core'
 import { Fridge, NavArrowDown, SunLight, Trash } from 'iconoir-react-native'
-import { useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import Animated, { FadeIn } from 'react-native-reanimated'
 
@@ -36,13 +36,14 @@ interface StepRowProps {
   stage: Stage
   preferences: Preferences
   canRemove: boolean
+  open: boolean
+  onToggle: () => void
   onChange: (patch: Partial<Stage>) => void
   onRemove: () => void
 }
 
-export function StepRow({ stage, preferences, canRemove, onChange, onRemove }: StepRowProps) {
+export function StepRow({ stage, preferences, canRemove, open, onToggle, onChange, onRemove }: StepRowProps) {
   const palette = usePalette()
-  const [open, setOpen] = useState(false)
   const cold = isCold(stage.temp)
   const place = stagePlace(stage, preferences)
 
@@ -54,7 +55,7 @@ export function StepRow({ stage, preferences, canRemove, onChange, onRemove }: S
         accessibilityLabel={`${stageTitle(stage)} ${place}, ${formatDuration(stage.hours)}`}
         onPress={() => {
           tick()
-          setOpen(!open)
+          onToggle()
         }}
         style={({ pressed }) => [styles.header, pressed && styles.pressed]}
       >
@@ -85,10 +86,10 @@ export function StepRow({ stage, preferences, canRemove, onChange, onRemove }: S
             options={placeOptions}
             onChange={(next) => onChange({ temp: next === 'fridge' ? 4 : 22 })}
           />
-          <MeasureRuler label="Time" scale={hoursScale(96)} value={stage.hours} onChange={(hours) => onChange({ hours })} />
+          <MeasureRuler label="Time" scale={hoursScale()} value={stage.hours} onChange={(hours) => onChange({ hours })} />
           <MeasureRuler
             label="Temperature"
-            scale={temperatureScale(preferences.temperature, [1, 35])}
+            scale={temperatureScale(preferences.temperature, limits.temp)}
             value={stage.temp}
             onChange={(temp) => onChange({ temp })}
           />

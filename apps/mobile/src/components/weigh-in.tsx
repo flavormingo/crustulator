@@ -45,7 +45,7 @@ export function WeighIn({ recipe, dough, preferences }: WeighInProps) {
   const palette = usePalette()
   const split = dough.groups.length > 1
   return (
-    <View style={styles.root} accessibilityLabel="Ingredients">
+    <View style={styles.root}>
       {dough.groups.map((group) => (
         <View key={group.key} style={styles.group}>
           {split ? (
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     gap: space.sm,
   },
   name: {
-    flexShrink: 0,
+    flexShrink: 1,
   },
   leader: {
     flex: 1,
@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     minWidth: 16,
   },
   amount: {
+    flexShrink: 0,
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 4,

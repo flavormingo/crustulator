@@ -1,5 +1,5 @@
 import { Minus, NavArrowDown, Plus } from 'iconoir-react-native'
-import { useRef, useState, type ComponentType, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react'
 import { Alert, Pressable, ScrollView, StyleSheet, View, type PressableProps, type StyleProp, type ViewStyle } from 'react-native'
 import Animated, { FadeIn } from 'react-native-reanimated'
 import type { SvgProps } from 'react-native-svg'
@@ -72,6 +72,7 @@ export function RoundButton({ icon: IconComponent, label, filled, size = 44, onP
         tap()
         onPress?.(event)
       }}
+      accessibilityState={{ disabled: props.disabled === true }}
       style={({ pressed }) => [
         styles.round,
         {
@@ -149,6 +150,8 @@ export function Stepper({ label, value, min, max, onChange, unit }: StepperProps
     repeat.current = null
   }
 
+  useEffect(() => stopRepeat, [])
+
   const ask = () => {
     Alert.prompt(
       `How many ${unit(2)}?`,
@@ -218,7 +221,7 @@ export function Segmented<T extends string>({ label, value, options, onChange }:
             <Body
               bold
               size={15}
-              numberOfLines={1}
+              numberOfLines={2}
               adjustsFontSizeToFit={dense}
               minimumFontScale={0.85}
               color={selected ? palette.onAccent : palette.accent}
@@ -368,7 +371,7 @@ const styles = StyleSheet.create({
     borderWidth: stroke,
   },
   buttonSmall: {
-    minHeight: 40,
+    minHeight: 44,
     paddingHorizontal: space.lg,
     borderRadius: 20,
   },
@@ -395,7 +398,7 @@ const styles = StyleSheet.create({
   },
   segment: {
     flex: 1,
-    minHeight: 40,
+    minHeight: 44,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -409,7 +412,7 @@ const styles = StyleSheet.create({
     gap: space.sm,
   },
   chip: {
-    minHeight: 40,
+    minHeight: 44,
     paddingHorizontal: space.lg,
     borderRadius: 20,
     borderWidth: stroke,

@@ -81,7 +81,7 @@ export function WeighIn({ recipe, dough, preferences, title = 'Your dough', chil
         <output>{formatTotalWeight(dough.total, preferences.weight)}</output>
       </p>
       {dough.warnings.map((warning) => (
-        <p key={warning} role="status">
+        <p key={warning}>
           <WarningTriangle aria-hidden="true" />
           {warningCopy[warning]}
         </p>

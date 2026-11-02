@@ -1,5 +1,7 @@
 import {
   formatPercent,
+  limits,
+  yeastLimit,
   marginHints,
   marginNames,
   hoursScale,
@@ -62,7 +64,7 @@ export function YeastSection() {
           label={sourdough ? 'Starter' : dough.preferment ? 'Yeast in the final dough' : 'Yeast'}
           value={recipe.yeastPercent ?? 0}
           min={0}
-          max={sourdough ? 40 : recipe.yeast === 'fresh' ? 6 : 2}
+          max={yeastLimit(recipe.yeast)}
           step={sourdough ? 0.5 : 0.01}
           major={10}
           format={formatPercent}
@@ -82,8 +84,8 @@ export function YeastSection() {
         <Ruler
           label="Starter hydration"
           value={recipe.starterHydration}
-          min={50}
-          max={200}
+          min={limits.starterHydration[0]}
+          max={limits.starterHydration[1]}
           step={5}
           major={10}
           format={formatPercent}
@@ -100,8 +102,8 @@ export function YeastSection() {
               <Ruler
                 label={`Flour in the ${prefermentName.toLowerCase()}`}
                 value={preferment.flour}
-                min={10}
-                max={100}
+                min={limits.prefermentFlour[0]}
+                max={limits.prefermentFlour[1]}
                 step={5}
                 major={2}
                 format={formatPercent}
@@ -110,8 +112,8 @@ export function YeastSection() {
               <Ruler
                 label={`${prefermentName} hydration`}
                 value={preferment.hydration}
-                min={40}
-                max={130}
+                min={limits.prefermentHydration[0]}
+                max={limits.prefermentHydration[1]}
                 step={5}
                 major={2}
                 format={formatPercent}
@@ -119,13 +121,13 @@ export function YeastSection() {
               />
               <MeasureRuler
                 label={`${prefermentName} time`}
-                scale={{ ...hoursScale(48), min: 1 }}
+                scale={hoursScale(limits.prefermentHours)}
                 value={preferment.hours}
-                onChange={(hours) => setRecipe((current) => ({ ...current, preferment: { ...current.preferment, hours: Math.max(1, hours) } }))}
+                onChange={(hours) => setRecipe((current) => ({ ...current, preferment: { ...current.preferment, hours } }))}
               />
               <MeasureRuler
                 label={`${prefermentName} temperature`}
-                scale={temperatureScale(preferences.temperature, [2, 30])}
+                scale={temperatureScale(preferences.temperature, limits.temp)}
                 value={preferment.temp}
                 onChange={(temp) => setRecipe((current) => ({ ...current, preferment: { ...current.preferment, temp } }))}
                 note={`Mix it with ${formatPercent(dough.preferment ? (dough.preferment.yeast / dough.preferment.flour) * 100 : 0)} yeast by flour weight.`}

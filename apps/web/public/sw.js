@@ -1,8 +1,20 @@
-const VERSION = 'crustulator-v1'
-const SHELL = ['/', '/recipes', '/offline.html']
+const VERSION = 'crustulator-2'
+const SHELL = ['/', '/offline.html']
+const LIMIT = 80
+
+async function trim(cache) {
+  const keys = await cache.keys()
+  if (keys.length <= LIMIT) return
+  for (const key of keys.slice(0, keys.length - LIMIT)) await cache.delete(key)
+}
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()))
+  event.waitUntil(
+    caches
+      .open(VERSION)
+      .then((cache) => Promise.allSettled(SHELL.map((url) => cache.add(url))))
+      .then(() => self.skipWaiting()),
+  )
 })
 
 self.addEventListener('activate', (event) => {
@@ -14,28 +26,32 @@ self.addEventListener('activate', (event) => {
   )
 })
 
-async function fromNetwork(request) {
-  const response = await fetch(request)
-  if (response.ok) {
-    const cache = await caches.open(VERSION)
-    cache.put(request, response.clone())
-  }
-  return response
+async function store(request, response) {
+  if (!response.ok) return
+  const cache = await caches.open(VERSION)
+  await cache.put(request, response.clone())
+  await trim(cache)
 }
 
-async function page(request) {
+async function page(event) {
+  const url = new URL(event.request.url)
+  const key = url.origin + url.pathname
   try {
-    return await fromNetwork(request)
+    const response = await fetch(event.request)
+    if (!url.search) event.waitUntil(store(key, response.clone()).catch(() => {}))
+    return response
   } catch {
-    return (await caches.match(request)) ?? (await caches.match('/')) ?? (await caches.match('/offline.html'))
+    return (await caches.match(key)) ?? (await caches.match('/offline.html')) ?? Response.error()
   }
 }
 
-async function asset(request) {
-  const cached = await caches.match(request)
+async function asset(event) {
+  const cached = await caches.match(event.request)
   if (cached) return cached
   try {
-    return await fromNetwork(request)
+    const response = await fetch(event.request)
+    event.waitUntil(store(event.request, response.clone()).catch(() => {}))
+    return response
   } catch {
     return Response.error()
   }
@@ -44,5 +60,5 @@ async function asset(request) {
 self.addEventListener('fetch', (event) => {
   const { request } = event
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return
-  event.respondWith(request.mode === 'navigate' ? page(request) : asset(request))
+  event.respondWith(request.mode === 'navigate' ? page(event) : asset(event))
 })

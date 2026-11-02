@@ -44,6 +44,7 @@ export function Ruler({ label, value, min, max, step, major = 10, format, onChan
   const index = clamp(Math.round((value - min) / step), 0, count)
   const shown = useRef(index)
   const [width, setWidth] = useState(0)
+  const initialOffset = useRef(index * SPACING)
   const patternId = `ticks-${major}`
   const fadeId = `fade-${palette.scheme}`
 
@@ -76,6 +77,10 @@ export function Ruler({ label, value, min, max, step, major = 10, format, onChan
     if (settle.current) clearTimeout(settle.current)
     active.current = true
   }
+
+  useEffect(() => () => {
+    if (settle.current) clearTimeout(settle.current)
+  }, [])
 
   const nudge = (direction: 1 | -1) => {
     const next = clamp(index + direction, 0, count)
@@ -129,7 +134,7 @@ export function Ruler({ label, value, min, max, step, major = 10, format, onChan
             snapToInterval={SPACING}
             decelerationRate="fast"
             scrollEventThrottle={16}
-            contentOffset={{ x: index * SPACING, y: 0 }}
+            contentOffset={{ x: initialOffset.current, y: 0 }}
             contentContainerStyle={{ paddingHorizontal: width / 2 }}
             onScroll={onScroll}
             onScrollBeginDrag={hold}

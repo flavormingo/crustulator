@@ -1,4 +1,4 @@
-import { diameterFor, formatLength, formatWeight, lengthScale, pieceName, setShapeKind, weightScale, type Shape } from '@crustulator/core'
+import { diameterFor, formatLength, formatWeight, lengthScale, limits, pieceName, setShapeKind, weightScale, type Shape } from '@crustulator/core'
 
 import { Section, Segmented, Stepper } from '@/components/controls'
 import { MeasureRuler } from '@/components/measure-ruler'
@@ -18,7 +18,7 @@ export function SizeSection() {
   return (
     <Section title={pieces.charAt(0).toUpperCase() + pieces.slice(1)}>
       <Stepper
-        label={pieceName(recipe, 2)}
+        label={`Number of ${pieces}`}
         value={recipe.count}
         min={1}
         max={99}
@@ -43,7 +43,7 @@ export function SizeSection() {
       {shape.kind === 'round' ? (
         <MeasureRuler
           label="Diameter"
-          scale={lengthScale(preferences.length, [15, 60])}
+          scale={lengthScale(preferences.length, limits.diameter)}
           value={shape.diameter}
           onChange={(diameter) => setRecipe((current) => ({ ...current, shape: { kind: 'round', diameter } }))}
           note={`About ${formatWeight(dough.ball, preferences.weight)} of dough each.`}
@@ -53,13 +53,13 @@ export function SizeSection() {
         <>
           <MeasureRuler
             label="Pan width"
-            scale={lengthScale(preferences.length, [10, 80])}
+            scale={lengthScale(preferences.length, limits.side)}
             value={shape.width}
             onChange={(width) => setRecipe((current) => (current.shape.kind === 'pan' ? { ...current, shape: { ...current.shape, width } } : current))}
           />
           <MeasureRuler
             label="Pan length"
-            scale={lengthScale(preferences.length, [10, 80])}
+            scale={lengthScale(preferences.length, limits.side)}
             value={shape.length}
             onChange={(length) => setRecipe((current) => (current.shape.kind === 'pan' ? { ...current, shape: { ...current.shape, length } } : current))}
             note={`About ${formatWeight(dough.ball, preferences.weight)} of dough per pan.`}

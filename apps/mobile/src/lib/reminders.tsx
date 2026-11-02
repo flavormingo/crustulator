@@ -26,14 +26,16 @@ export function ReminderSync() {
   useEffect(() => {
     let cancelled = false
     const timer = setTimeout(async () => {
+      if (cancelled) return
       await Notifications.cancelAllScheduledNotificationsAsync().catch(() => {})
       if (!plan.reminders || cancelled) return
       const permission = await Notifications.getPermissionsAsync()
       if (!permission.granted || cancelled) return
       const style = getStyle(recipe.style)
       const events = buildPlan(recipe, style.oven, { bake: plan.bake })
-      for (const event of events) {
-        if (cancelled || event.at <= Date.now() + 10_000) continue
+      for (const [index, event] of events.entries()) {
+        if (cancelled) break
+        if (event.at <= Date.now() + 10_000 || plan.done.includes(index)) continue
         const copy = describeEvent(event, { recipe, dough, oven: style.oven, preferences })
         await Notifications.scheduleNotificationAsync({
           content: { title: copy.title, body: copy.detail },
@@ -45,7 +47,7 @@ export function ReminderSync() {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [recipe, dough, preferences, plan.bake, plan.reminders])
+  }, [recipe, dough, preferences, plan.bake, plan.reminders, plan.done])
 
   return null
 }

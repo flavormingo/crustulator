@@ -45,12 +45,16 @@ export function buildPlan(recipe: Recipe, oven: Oven, anchor: Anchor): PlanEvent
     events.push({ kind: 'preferment', at: cursor, stage: null })
     cursor += recipe.preferment.hours * HOUR
   }
-  recipe.stages.forEach((stage, index) => {
-    if (stage.hours <= 0) return
-    events.push({ kind: kindFor(recipe.stages[index - 1], stage), at: cursor, stage })
-    cursor += stage.hours * HOUR
-  })
-  events.push({ kind: 'preheat', at: bake - oven.preheat * MINUTE, stage: null })
+  const resting = recipe.stages.filter((stage) => stage.hours > 0)
+  if (resting.length === 0) {
+    events.push({ kind: 'mix', at: cursor, stage: null })
+  } else {
+    resting.forEach((stage, index) => {
+      events.push({ kind: kindFor(resting[index - 1], stage), at: cursor, stage })
+      cursor += stage.hours * HOUR
+    })
+  }
+  events.push({ kind: 'preheat', at: Math.max(bake - oven.preheat * MINUTE, cursor === start ? start : start + 1), stage: null })
   events.push({ kind: 'bake', at: bake, stage: null })
   return events.sort((a, b) => a.at - b.at || order(a.kind) - order(b.kind))
 }
@@ -103,11 +107,13 @@ export function describeEvent(event: PlanEvent, context: EventContext): EventCop
     }
     case 'mix': {
       const water = `Mixing by hand, start with water at about ${formatTemperature(mixWaterTemperature(recipe), preferences.temperature)}.`
-      const knead = stage?.step === 'balls'
-        ? `Knead until smooth, shape ${count} ${pieces} of ${weight(dough.ball)} and rest them ${rest}.`
-        : stage?.step === 'pan'
-          ? `Knead until smooth, press into ${count} oiled ${pieces} and proof ${rest}.`
-          : `Knead until smooth and elastic. Let it rise in one piece ${rest}.`
+      const knead = !stage
+        ? `Knead until smooth, then shape ${count} ${pieces} of ${weight(dough.ball)}. Give the dough some resting time for a better crust.`
+        : stage.step === 'balls'
+          ? `Knead until smooth, shape ${count} ${pieces} of ${weight(dough.ball)} and rest them ${rest}.`
+          : stage.step === 'pan'
+            ? `Knead until smooth, press into ${count} oiled ${pieces} and proof ${rest}.`
+            : `Knead until smooth and elastic. Let it rise in one piece ${rest}.`
       return { title: 'Mix the dough', detail: `${water} ${knead}` }
     }
     case 'divide':

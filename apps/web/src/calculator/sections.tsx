@@ -12,6 +12,7 @@ import {
   lengthScale,
   limits,
   loadingScale,
+  yeastLimit,
   marginHints,
   marginNames,
   matchSchedule,
@@ -87,7 +88,7 @@ export function SizeFields({ recipe, dough, preferences, update }: SectionProps)
       {shape.kind === 'round' ? (
         <ScaledRuler
           label="Diameter"
-          scale={lengthScale(preferences.length, [15, 60])}
+          scale={lengthScale(preferences.length, limits.diameter)}
           value={shape.diameter}
           onChange={(diameter) => update((current) => ({ ...current, shape: { kind: 'round', diameter } }))}
           note={`About ${formatWeight(dough.ball, preferences.weight)} of dough each.`}
@@ -97,13 +98,13 @@ export function SizeFields({ recipe, dough, preferences, update }: SectionProps)
         <>
           <ScaledRuler
             label="Pan width"
-            scale={lengthScale(preferences.length, [10, 80])}
+            scale={lengthScale(preferences.length, limits.side)}
             value={shape.width}
             onChange={(width) => update((current) => (current.shape.kind === 'pan' ? { ...current, shape: { ...current.shape, width } } : current))}
           />
           <ScaledRuler
             label="Pan length"
-            scale={lengthScale(preferences.length, [10, 80])}
+            scale={lengthScale(preferences.length, limits.side)}
             value={shape.length}
             onChange={(length) => update((current) => (current.shape.kind === 'pan' ? { ...current, shape: { ...current.shape, length } } : current))}
             note={`About ${formatWeight(dough.ball, preferences.weight)} of dough per pan.`}
@@ -123,10 +124,10 @@ export function FormulaFields({ recipe, update }: SectionProps) {
         The formula
         <NavArrowDown aria-hidden="true" />
       </summary>
-      <Ruler label="Hydration" value={recipe.hydration} min={45} max={100} step={0.5} major={10} format={formatPercent} onChange={set('hydration')} note={`${vibe.label}. ${vibe.note}`} />
-      <Ruler label="Salt" value={recipe.salt} min={0} max={5} step={0.1} major={10} format={formatPercent} onChange={set('salt')} />
-      <Ruler label="Olive oil" value={recipe.oil} min={0} max={20} step={0.5} major={10} format={formatPercent} onChange={set('oil')} />
-      <Ruler label="Sugar" value={recipe.sugar} min={0} max={6} step={0.25} major={4} format={formatPercent} onChange={set('sugar')} />
+      <Ruler label="Hydration" value={recipe.hydration} min={limits.hydration[0]} max={limits.hydration[1]} step={0.5} major={10} format={formatPercent} onChange={set('hydration')} note={`${vibe.label}. ${vibe.note}`} />
+      <Ruler label="Salt" value={recipe.salt} min={limits.salt[0]} max={limits.salt[1]} step={0.1} major={10} format={formatPercent} onChange={set('salt')} />
+      <Ruler label="Olive oil" value={recipe.oil} min={limits.oil[0]} max={limits.oil[1]} step={0.5} major={10} format={formatPercent} onChange={set('oil')} />
+      <Ruler label="Sugar" value={recipe.sugar} min={limits.sugar[0]} max={limits.sugar[1]} step={0.25} major={4} format={formatPercent} onChange={set('sugar')} />
     </details>
   )
 }
@@ -166,7 +167,7 @@ export function YeastFields({ recipe, dough, preferences, update }: SectionProps
           label={sourdough ? 'Starter' : dough.preferment ? 'Yeast in the final dough' : 'Yeast'}
           value={recipe.yeastPercent ?? 0}
           min={0}
-          max={sourdough ? 40 : recipe.yeast === 'fresh' ? 6 : 2}
+          max={yeastLimit(recipe.yeast)}
           step={sourdough ? 0.5 : 0.01}
           major={10}
           format={formatPercent}
@@ -184,8 +185,8 @@ export function YeastFields({ recipe, dough, preferences, update }: SectionProps
         <Ruler
           label="Starter hydration"
           value={recipe.starterHydration}
-          min={50}
-          max={200}
+          min={limits.starterHydration[0]}
+          max={limits.starterHydration[1]}
           step={5}
           major={10}
           format={formatPercent}
@@ -198,12 +199,12 @@ export function YeastFields({ recipe, dough, preferences, update }: SectionProps
           <p>{prefermentHints[preferment.type]}</p>
           {preferment.type !== 'none' ? (
             <>
-              <Ruler label={`Flour in the ${name}`} value={preferment.flour} min={10} max={100} step={5} major={2} format={formatPercent} onChange={(flour) => setPreferment({ flour })} />
-              <Ruler label={`${prefermentNames[preferment.type]} hydration`} value={preferment.hydration} min={40} max={130} step={5} major={2} format={formatPercent} onChange={(hydration) => setPreferment({ hydration })} />
-              <ScaledRuler label={`${prefermentNames[preferment.type]} time`} scale={{ ...hoursScale(48), min: 1 }} value={preferment.hours} onChange={(hours) => setPreferment({ hours: Math.max(1, hours) })} />
+              <Ruler label={`Flour in the ${name}`} value={preferment.flour} min={limits.prefermentFlour[0]} max={limits.prefermentFlour[1]} step={5} major={2} format={formatPercent} onChange={(flour) => setPreferment({ flour })} />
+              <Ruler label={`${prefermentNames[preferment.type]} hydration`} value={preferment.hydration} min={limits.prefermentHydration[0]} max={limits.prefermentHydration[1]} step={5} major={2} format={formatPercent} onChange={(hydration) => setPreferment({ hydration })} />
+              <ScaledRuler label={`${prefermentNames[preferment.type]} time`} scale={hoursScale(limits.prefermentHours)} value={preferment.hours} onChange={(hours) => setPreferment({ hours })} />
               <ScaledRuler
                 label={`${prefermentNames[preferment.type]} temperature`}
-                scale={temperatureScale(preferences.temperature, [2, 30])}
+                scale={temperatureScale(preferences.temperature, limits.temp)}
                 value={preferment.temp}
                 onChange={(temp) => setPreferment({ temp })}
                 note={`Mix it with ${formatPercent(dough.preferment ? (dough.preferment.yeast / dough.preferment.flour) * 100 : 0)} yeast by flour weight.`}
@@ -276,8 +277,8 @@ export function ScheduleFields({ recipe, preferences, update }: SectionProps) {
                   options={placeOptions}
                   onChange={(place) => updateStage(index, { temp: place === 'fridge' ? 4 : 22 })}
                 />
-                <ScaledRuler label="Time" scale={hoursScale(96)} value={stage.hours} onChange={(value) => updateStage(index, { hours: value })} />
-                <ScaledRuler label="Temperature" scale={temperatureScale(preferences.temperature, [1, 35])} value={stage.temp} onChange={(temp) => updateStage(index, { temp })} />
+                <ScaledRuler label="Time" scale={hoursScale()} value={stage.hours} onChange={(value) => updateStage(index, { hours: value })} />
+                <ScaledRuler label="Temperature" scale={temperatureScale(preferences.temperature, limits.temp)} value={stage.temp} onChange={(temp) => updateStage(index, { temp })} />
                 <button type="button" disabled={recipe.stages.length === 1} onClick={() => removeStage(index)}>
                   <Trash aria-hidden="true" />
                   Remove this step
@@ -309,7 +310,7 @@ export function TuningFields({ recipe, preferences, update }: SectionProps) {
       </summary>
       <ScaledRuler
         label="Dough temperature"
-        scale={temperatureScale(preferences.temperature, [16, 30])}
+        scale={temperatureScale(preferences.temperature, limits.doughTemp)}
         value={recipe.doughTemp}
         onChange={(doughTemp) => update((current) => ({ ...current, doughTemp }))}
         note={`Kneading by hand in a ${formatTemperature(room, preferences.temperature)} kitchen? Use water at about ${formatTemperature(Math.max(1, water), preferences.temperature)}.`}
@@ -324,8 +325,8 @@ export function TuningFields({ recipe, preferences, update }: SectionProps) {
       <Ruler
         label="Bowl residue"
         value={recipe.residue}
-        min={0}
-        max={10}
+        min={limits.residue[0]}
+        max={limits.residue[1]}
         step={0.5}
         major={2}
         format={formatPercent}

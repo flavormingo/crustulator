@@ -9,7 +9,7 @@ import { usePalette } from '@/theme/use-palette'
 export function Notice({ children, action }: { children: string; action?: ReactNode }) {
   const palette = usePalette()
   return (
-    <View style={[styles.root, { borderColor: palette.accent, backgroundColor: palette.raised }]} accessibilityRole="alert">
+    <View accessible accessibilityRole="alert" style={[styles.root, { borderColor: palette.accent, backgroundColor: palette.raised }]}>
       <WarningTriangle width={22} height={22} color={palette.accent} strokeWidth={2} />
       <View style={styles.text}>
         <Body size={15}>{children}</Body>

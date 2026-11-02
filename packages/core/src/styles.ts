@@ -2,7 +2,7 @@ import type { Preferment, Recipe, Stage, Style, StyleId } from './types'
 
 const INCH = 2.54
 
-const noPreferment: Preferment = { type: 'none', flour: 30, hydration: 100, hours: 16, temp: 18 }
+const noPreferment = (): Preferment => ({ type: 'none', flour: 30, hydration: 100, hours: 16, temp: 18 })
 
 const counter = (step: Stage['step'], hours: number, temp = 22): Stage => ({ step, hours, temp })
 const fridge = (step: Stage['step'], hours: number, temp = 4): Stage => ({ step, hours, temp })
@@ -17,7 +17,7 @@ function recipe(style: StyleId, values: Partial<Recipe> & Pick<Recipe, 'shape' |
     yeastPercent: null,
     margin: 'tight',
     starterHydration: 100,
-    preferment: noPreferment,
+    preferment: noPreferment(),
     residue: 2,
     doughTemp: 24,
     ...values,
@@ -259,7 +259,7 @@ export const styles: Style[] = [
       hydration: 80,
       salt: 2,
       oil: 2,
-      stages: [counter('bulk', 1), fridge('bulk', 48), counter('balls', 3, 24)],
+      stages: [counter('bulk', 1), fridge('bulk', 48), counter('pan', 3, 24)],
     }),
     tips: [
       'Use coil folds instead of kneading. Wet hands help a lot.',
