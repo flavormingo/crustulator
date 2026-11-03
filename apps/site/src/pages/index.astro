@@ -21,6 +21,7 @@ import Tape from '../components/Tape.astro'
 import Base from '../layouts/Base.astro'
 
 const menu = styles.map((style) => ({
+  id: style.id,
   name: style.name,
   tagline: style.tagline,
   hydration: `${style.recipe.hydration}% hydration`,
@@ -90,7 +91,7 @@ const extras = [
     <ul>
       {menu.map((style) => (
         <li>
-          <h3>{style.name}</h3>
+          <h3><a href={`https://crustulator.com/styles/${style.id}`}>{style.name}</a></h3>
           <p>{style.tagline}</p>
           <p>
             <span>{style.hydration}</span>{' '}

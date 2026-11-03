@@ -4,10 +4,10 @@
   --raised: var(--dough);
   --ink: var(--char);
   --muted: var(--crust);
-  --accent: var(--sauce);
+  --accent: var(--sauce-deep);
   --on-accent: var(--butter);
-  --line: color-mix(in srgb, var(--sauce) 35%, transparent);
-  --tick: color-mix(in srgb, var(--sauce) 55%, transparent);
+  --line: color-mix(in srgb, var(--accent) 35%, transparent);
+  --tick: color-mix(in srgb, var(--accent) 55%, transparent);
   --faint: color-mix(in srgb, var(--char) 10%, transparent);
   --footer: var(--char);
   --stroke: 2.5px;
@@ -21,10 +21,11 @@
     --ground: var(--oven);
     --raised: var(--ember);
     --ink: var(--butter);
+    --accent: var(--sauce);
     --on-accent: var(--oven);
     --muted: #d9c98a;
-    --line: color-mix(in srgb, var(--sauce) 50%, transparent);
-    --tick: color-mix(in srgb, var(--sauce) 70%, transparent);
+    --line: color-mix(in srgb, var(--accent) 50%, transparent);
+    --tick: color-mix(in srgb, var(--accent) 70%, transparent);
     --faint: color-mix(in srgb, var(--butter) 12%, transparent);
     --footer: #1f090b;
   }

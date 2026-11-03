@@ -1,6 +1,7 @@
 export const brand = {
   butter: '#FFF888',
   sauce: '#FB3A44',
+  sauceDeep: '#C9202B',
   oven: '#2A0D0F',
 } as const
 
@@ -23,9 +24,9 @@ export const palettes: Record<'light' | 'dark', Palette> = {
     raised: '#FFFCC7',
     ink: '#4A1215',
     muted: '#7E4B3A',
-    accent: brand.sauce,
+    accent: brand.sauceDeep,
     onAccent: brand.butter,
-    line: 'rgba(251, 58, 68, 0.35)',
+    line: 'rgba(201, 32, 43, 0.35)',
     faint: 'rgba(74, 18, 21, 0.12)',
   },
   dark: {

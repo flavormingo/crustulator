@@ -4,9 +4,9 @@
   --raised: var(--dough);
   --ink: var(--char);
   --muted: var(--crust);
-  --accent: var(--sauce);
+  --accent: var(--sauce-deep);
   --on-accent: var(--butter);
-  --line: color-mix(in oklab, var(--sauce) 40%, transparent);
+  --line: color-mix(in oklab, var(--accent) 40%, transparent);
   --bezel: var(--char);
   --band: var(--oven);
   --band-ink: var(--butter);
@@ -22,9 +22,10 @@
     --ground: var(--oven);
     --raised: var(--ember);
     --ink: var(--butter);
+    --accent: var(--sauce);
     --on-accent: var(--oven);
     --muted: #d9c98a;
-    --line: color-mix(in oklab, var(--sauce) 55%, transparent);
+    --line: color-mix(in oklab, var(--accent) 55%, transparent);
     --bezel: #140608;
     --band: var(--ember);
   }
@@ -147,8 +148,8 @@ body > a:first-child {
   }
 }
 
-header a[href^="https://crustulator.com"],
-main a[href^="https://crustulator.com"] {
+header a[href="https://crustulator.com"],
+main a[href="https://crustulator.com"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -593,6 +594,7 @@ main > section:has(> figure + figure) {
     [right-start] calc(var(--content) * 0.27)
     [right-end content-end] 1fr [full-end];
   align-items: center;
+  --accent: var(--sauce);
   background: var(--band);
   color: var(--band-ink);
   border-block: var(--stroke) solid var(--accent);
